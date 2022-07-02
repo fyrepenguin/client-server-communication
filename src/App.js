@@ -7,11 +7,10 @@ import Login from "./components/Login";
 import Layout from './components/Layout';
 import RequireAuth from './components/RequireAuth';
 import NotFound from './components/NotFound';
-import { useSelector, useDispatch } from 'react-redux';
-import { addTasks } from "./reducers/tasksSlice";
+import { useDispatch } from 'react-redux';
+import { fetchTasks } from "./reducers/tasksSlice";
 
 function App() {
-  const tasks = useSelector((state) => state.tasks)
 
   const dispatch = useDispatch();
 
@@ -27,20 +26,10 @@ function App() {
     createdAt: null
   };
 
-  useEffect(() => {
-    let arr = localStorage.getItem("tasks");
-    if (arr) {
-      dispatch(addTasks(JSON.parse(arr)));
-    }
+  useEffect(() => {    
+    dispatch(fetchTasks());
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (tasks && tasks.length > 0) {
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
-  }, [tasks]);
-
 
   return (
     <AuthProvider>
@@ -51,7 +40,7 @@ function App() {
             path="/"
             element={
               <RequireAuth>
-                <TodoList tasks={tasks} defaultTask={defaultTask} />
+                <TodoList defaultTask={defaultTask} />
               </RequireAuth>
             }
           />

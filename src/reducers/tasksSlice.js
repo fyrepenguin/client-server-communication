@@ -1,30 +1,87 @@
-import { createSlice } from '@reduxjs/toolkit'
-import tasksData from '../data/tasks.json'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-const initialState = [...tasksData]
+const initialState = [];
+
+export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
+  const response = await fetch('http://localhost:3001/tasks').then(res => res.json())
+  return response
+})
+
+export const addTask = createAsyncThunk('tasks/addTask', async (task, { getState }) => {
+  const state = getState()
+  const response = await fetch('http://localhost:3001/tasks', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(task)
+  }).then(res => res.json()).then(res => {
+    return [...state.tasks, res]
+  }).catch(err => console.error(err))
+  return response
+}
+)
+
+
+export const updateTask = createAsyncThunk('tasks/updateTask', async (task, { getState }) => {
+  const state = getState();
+  const response = await fetch(`http://localhost:3001/tasks/${task.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(task)
+  }).then(res => res.json()
+  ).then(res => {
+    let tempList = [...state.tasks];
+    let index = state.tasks.findIndex(t => t.id === res.id);
+    tempList[index] = res;
+    return [...tempList];
+  }).catch(err => console.error(err));
+  return response
+})
+
+export const deleteTask = createAsyncThunk('tasks/deleteTask', async (id, { getState }) => {
+  const state = getState();
+  const response = await fetch(`http://localhost:3001/tasks/${id}`, {
+    method: "DELETE"
+  }).then(res => res.json()
+  ).then(() => {
+    const tempList = [...state.tasks].filter(task => task.id !== id)
+    return [...tempList];
+  }
+  ).catch(err => console.error(err));
+  return response
+}
+)
+
 
 export const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
-  reducers: {
-    addTasks: (action) => {
-      return action.payload
-    },
-    addTask: (state, action) => {
-      return [...state, action.payload]
-    },
-    deleteTask: (state, action) => {
-      return state.filter(task => task.id !== action.payload)
-    },
-    updateTask: (state, action) => {
-      return state.map(task => task.id === action.payload.id ? { ...task, ...action.payload } : task)
+  reducers: {},
+  extraReducers(builder) {
+    builder.addCase(fetchTasks.fulfilled, (state, { payload }) => {
+      return payload
+    }
+    );
+    builder.addCase(addTask.fulfilled, (state, { payload }) => {
+      return payload
+    }
+    );
+    builder.addCase(updateTask.fulfilled, (state, { payload }) => {
 
-    },
-
-  },
+      return payload;
+    }
+    );
+    builder.addCase(deleteTask.fulfilled, (state, { payload }) => {
+      return payload;
+    }
+    );
+  }
 })
 
 // Action creators are generated for each case reducer function
-export const { addTask, deleteTask, updateTask, addTasks } = tasksSlice.actions
+export const { addTasks } = tasksSlice.actions
 
 export default tasksSlice.reducer

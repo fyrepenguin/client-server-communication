@@ -3,10 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 import TaskForm from './TaskForm'
 import TaskItem from './TaskItem';
 import TaskHeader from './TaskHeader';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { addTask } from '../reducers/tasksSlice';
 
-const TodoList = ({ tasks }) => {
+const TodoList = () => {
+  const tasks = useSelector((state) => state.tasks)
   const dispatch = useDispatch();
   const defaultTask = { title: "", description: "", deadline: null, tags: [], priority: false, image: "", completed: false, id: null, createdAt: null };
   const [modal, setModal] = useState(false);
@@ -85,7 +86,7 @@ const TodoList = ({ tasks }) => {
         <div className='task-input-container'>
           <button className="btn btn-primary mt-2" onClick={() => setModal(true)} >Create Detailed Task</button>
         </div>
-        <TaskHeader setSortedTasks={setSortedTasks} tasks={tasks} />
+        <TaskHeader setSortedTasks={setSortedTasks} />
 
       </div>
       <div className="tasks-container">

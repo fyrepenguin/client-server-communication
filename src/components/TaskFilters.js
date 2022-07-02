@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import tags from '../data/tags.json';
 import Select from 'react-select';
+import { useSelector } from 'react-redux';
 
-const TaskFilters = ({ tasks, setSortedTasks }) => {
+const TaskFilters = ({ setSortedTasks }) => {
+  const tasks = useSelector((state) => state.tasks)
   const options = [{
     value: 'all',
     label: 'All'

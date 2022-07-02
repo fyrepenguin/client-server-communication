@@ -17,7 +17,7 @@ const TaskItem = ({ task, overDue = false }) => {
   }
 
   const handleStatus = (e) => {
-    setStatus(prev => !prev);
+    dispatch(updateTask({ ...task, completed: !status })); 
   }
 
   const handleDelete = () => {
@@ -28,7 +28,6 @@ const TaskItem = ({ task, overDue = false }) => {
   }, [task])
 
   useEffect(() => {
-    status !== null && dispatch(updateTask({ ...task, completed: status }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
 
